@@ -11,6 +11,7 @@ const UploadVideo = () => {
   const [mermaidCode, setMermaidCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isGeneratingMermaid, setIsGeneratingMermaid] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -91,28 +92,35 @@ const UploadVideo = () => {
     setIsGeneratingMermaid(true);
 
     try {
-    const mermaidResponse = await fetch("http://127.0.0.1:3010/mermaid", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ transcript: transcriptionResult.transcript }),
-    });
+      const mermaidResponse = await fetch("http://127.0.0.1:3010/mermaid", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ transcript: transcriptionResult.transcript }),
+      });
 
-    if (!mermaidResponse.ok) {
-      throw new Error(`HTTP error! status: ${mermaidResponse.status}`);
-    }
+      if (!mermaidResponse.ok) {
+        throw new Error(`HTTP error! status: ${mermaidResponse.status}`);
+      }
 
-    const mermaidBlob = await mermaidResponse.blob();
-    const mermaidText = await mermaidBlob.text();
-    console.log(mermaidText);
-    setMermaidCode(mermaidText);
+      const mermaidBlob = await mermaidResponse.blob();
+      const mermaidText = await mermaidBlob.text();
+      setMermaidCode(mermaidText);
     } catch (error) {
       console.error("Error generating mermaid diagram:", error);
       alert("Failed to generate mermaid diagram");
     } finally {
       setIsGeneratingMermaid(false);
     }
+  };
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
   };
 
   // Format the transcript for display - breaks into paragraphs and removes extra spaces
@@ -240,9 +248,20 @@ const UploadVideo = () => {
       )}
 
       {mermaidCode && (
-        <div className="mermaid-preview-container">
+        <div className="mermaid-preview-container" onClick={openModal}>
           <h2>Mermaid Diagram</h2>
           <MermaidPreview code={mermaidCode} />
+        </div>
+      )}
+
+      {isModalOpen && (
+        <div className="modal">
+          <div className="modal-content">
+            <span className="close" onClick={closeModal}>
+              &times;
+            </span>
+            <MermaidPreview code={mermaidCode} />
+          </div>
         </div>
       )}
     </div>
