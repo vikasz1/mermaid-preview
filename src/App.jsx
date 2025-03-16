@@ -3,6 +3,7 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
 import MermaidPreview from "./components/MermaidPreview";
+import UploadVideo from "./components/UploadVideo";
 
 function App() {
   const code = `
@@ -26,7 +27,8 @@ function App() {
   return (
     <>
       <div style={{ width: "100vw",  border:"red solid", background:"yellow"}}>
-        <MermaidPreview code={code} />
+        <UploadVideo/>
+        {/* <MermaidPreview code={code} /> */}
       </div>
     </>
   );
